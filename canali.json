@@ -1,0 +1,8 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "properties": { "name": "Canal Grande", "depth": 5 }, "geometry": { "type": "LineString", "coordinates": [[12.327, 45.437], [12.333, 45.434], [12.339, 45.435]] } },
+    { "type": "Feature", "properties": { "name": "Canale della Giudecca", "depth": 12 }, "geometry": { "type": "LineString", "coordinates": [[12.318, 45.429], [12.338, 45.427], [12.358, 45.432]] } },
+    { "type": "Feature", "properties": { "name": "Canale Orfano", "depth": 8 }, "geometry": { "type": "LineString", "coordinates": [[12.353, 45.418], [12.365, 45.405]] } }
+  ]
+}
