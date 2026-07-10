@@ -3,54 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Laguna Nav - Realtime Depth</title>
-    
-    <!-- Leaflet CSS -->
+    <title>LagunaSafe - Navigazione Venezia</title>
+
+    <!-- Leaflet CSS per la mappa -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
     <style>
-        body { margin: 0; padding: 0; font-family: sans-serif; }
-        #map { height: 100vh; width: 100vw; }
+        :root {
+            --bg-dark: #121212;
+            --accent: #00d1ff;
+            --danger: #ff4444;
+            --safe: #00ff88;
+        }
+
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg-dark); color: white; overflow: hidden; }
         
+        #map { height: 100vh; width: 100vw; z-index: 1; }
+
+        /* Dashboard Inferiore */
         #dashboard {
             position: absolute;
-            bottom: 20px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: rgba(18, 18, 18, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            border-top: 2px solid var(--accent);
+            padding: 10px;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
+        }
+
+        .data-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid #333;
+        }
+
+        .data-box:last-child { border-right: none; }
+
+        .label { font-size: 0.65rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .value { font-size: 1.6rem; font-weight: bold; font-family: monospace; }
+        .unit { font-size: 0.8rem; color: #777; margin-left: 2px; }
+
+        /* Status Bar Superiore */
+        #status-bar {
+            position: absolute;
+            top: 10px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 1000;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 15px;
-            border-radius: 15px;
-            width: 80%;
-            display: flex;
-            justify-content: space-around;
-            text-align: center;
+            background: rgba(0,0,0,0.7);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            white-space: nowrap;
         }
-        .data-box { display: flex; flex-direction: column; }
-        .value { font-size: 1.2em; font-weight: bold; color: #00d1ff; }
-        .label { font-size: 0.7em; text-transform: uppercase; }
+
+        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .status-ok { background: var(--safe); }
+
+        /* Pulsante GPS */
+        #gps-btn {
+            position: absolute;
+            right: 20px;
+            top: 70px;
+            z-index: 1000;
+            background: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
+
+    <div id="status-bar">
+        <span class="status-dot status-ok"></span> 
+        GPS Attivo - Centro Maree: <span id="last-update">--:--</span>
+    </div>
+
+    <button id="gps-btn" onclick="recenterMap()">🎯</button>
 
     <div id="map"></div>
 
     <div id="dashboard">
         <div class="data-box">
-            <span class="label">Marea (PS)</span>
-            <span id="marea-val" class="value">-- cm</span>
+            <span class="label">Marea Reale</span>
+            <div><span id="marea-val" class="value">--</span><span class="unit">cm</span></div>
         </div>
         <div class="data-box">
-            <span class="label">Fondale</span>
-            <span id="fondo-val" class="value">-- m</span>
+            <span class="label">Fondo (Z.I.)</span>
+            <div><span id="fondo-val" class="value">--</span><span class="unit">m</span></div>
         </div>
-        <div class="data-box">
-            <span class="label">Prof. Totale</span>
-            <span id="prof-val" class="value" style="color: #00ff88;">-- m</span>
+        <div class="data-box" id="depth-container">
+            <span class="label">Acqua Sotto</span>
+            <div><span id="prof-val" class="value">--</span><span class="unit">m</span></div>
         </div>
     </div>
 
-    <!-- Leaflet JS -->
+    <!-- Script Leaflet -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="app.js"></script>
 </body>
